@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>كابوس التللر - النسخة الاحترافية 2D</title>
+    <title>كابوس التللر - النسخة الجرافيكية الاحترافية PNG</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -22,54 +22,49 @@
         body, html {
             height: 100%;
             margin: 0;
-            background-color: #0f172a;
+            background-color: #0d1117;
             overflow: hidden;
         }
 
-        .bank-interior {
-            background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+        /* خلفية صالة بنك حقيقية برسومات جرافيكس */
+        .bank-bg-image {
+            background-image: url('https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
         }
 
-        .counter-wood {
-            background: linear-gradient(0deg, #2c1810 0%, #4a2c11 50%, #683b16 100%);
-            box-shadow: inset 0 8px 15px rgba(0,0,0,0.6), 0 -4px 10px rgba(0,0,0,0.4);
+        .counter-texture {
+            background: linear-gradient(180deg, #3a2211 0%, #1c130b 100%);
+            border-top: 5px solid #683b16;
+            box-shadow: 0 -8px 20px rgba(0,0,0,0.8);
         }
 
-        .terminal-box {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 3px solid #475569;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        .terminal-screen {
+            background: #0f172a;
+            border: 3px solid #334155;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
         }
 
         .stamp-anim {
-            animation: stampDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: stampEffect 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes stampDown {
-            0% { transform: scale(1.4) rotate(-10deg); opacity: 0; }
+        @keyframes stampEffect {
+            0% { transform: scale(1.4) rotate(-8deg); opacity: 0; }
             50% { transform: scale(0.9) rotate(2deg); opacity: 1; }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
 
-        .money-note {
-            transition: all 0.1s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-        }
-        .money-note:active {
-            transform: scale(0.92) translateY(2px);
+        .uv-overlay {
+            box-shadow: 0 0 40px #a855f7, inset 0 0 25px #9333ea !important;
+            background-color: rgba(46, 16, 101, 0.85) !important;
         }
 
-        .uv-mode {
-            box-shadow: 0 0 35px #a855f7, inset 0 0 20px #9333ea !important;
-            background-color: #2e1065 !important;
-            border-color: #c084fc !important;
+        .shake {
+            animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both;
         }
 
-        .shake-screen {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes shake {
+        @keyframes shakeAnim {
             10%, 90% { transform: translate3d(-2px, 0, 0); }
             20%, 80% { transform: translate3d(4px, 0, 0); }
             30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
@@ -79,14 +74,14 @@
 </head>
 <body class="text-white flex flex-col justify-between h-screen w-screen p-1 sm:p-2">
 
-    <!-- Top Action Header -->
-    <header class="flex justify-between items-center px-3 py-1 bg-slate-900 border border-slate-800 rounded-xl shrink-0">
-        <button onclick="undoAction()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+    <!-- TOP HEADER CONTROL BAR -->
+    <header class="flex justify-between items-center px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl shrink-0 z-20 shadow-lg">
+        <button onclick="undoAction()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5">
             <i class="fa-solid fa-rotate-left text-amber-400"></i> تراجع (Undo)
         </button>
-        <div class="flex items-center gap-3 text-xs">
-            <span class="text-slate-400">الهدف: <b class="text-emerald-400" id="target-display">2500</b> ج.م</span>
-            <span class="text-slate-400">الفعلي بالخزنة: <b class="text-amber-400" id="actual-display">0</b> ج.م</span>
+        <div class="flex items-center gap-4 text-xs font-bold">
+            <span>الهدف: <b class="text-emerald-400" id="target-display">2500</b> ج.م</span>
+            <span>الفعلي: <b class="text-amber-400" id="actual-display">0</b> ج.م</span>
         </div>
         <button onclick="confirmTransaction()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-black shadow-lg flex items-center gap-1.5">
             <i class="fa-solid fa-stamp"></i> تأكيد المعاملة (CONFIRM)
@@ -94,26 +89,26 @@
     </header>
 
     <!-- MAIN GAME WORKSPACE -->
-    <main id="game-container" class="relative flex-1 flex flex-col max-w-5xl w-full mx-auto bg-slate-950 rounded-2xl border-2 border-slate-800 shadow-2xl overflow-hidden justify-between p-2 my-1">
+    <main id="game-container" class="relative flex-1 flex flex-col max-w-5xl w-full mx-auto rounded-2xl border-2 border-slate-800 shadow-2xl overflow-hidden justify-between p-2 my-1 bg-slate-950">
         
-        <!-- START SCREEN -->
+        <!-- START OVERLAY -->
         <div id="start-screen" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center">
-            <div class="w-20 h-20 bg-amber-500 text-slate-950 rounded-full flex items-center justify-center text-4xl mb-3 shadow-lg animate-bounce">
-                <i class="fa-solid fa-user-tie"></i>
+            <div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-amber-500 shadow-2xl animate-bounce">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=BankManager" alt="Manager" class="w-full h-full object-cover">
             </div>
-            <h1 class="text-3xl sm:text-4xl font-black text-amber-400 mb-2">كابوس التللر - النسخة الاحترافية</h1>
+            <h1 class="text-3xl sm:text-4xl font-black text-amber-400 mb-2">كابوس التللر - الجرافيكس الاحترافي</h1>
             <p class="text-slate-300 text-xs sm:text-sm max-w-md mb-6 leading-relaxed">
-                استمتع بلعبة إدارة الشباك المصرية! حاسبة أمامك، صالة بنك حقيقية في الخلفية، زبائن بطلبات غريبة، إقامات سودانية، ويسترن يونيون، وكاشف تزوير!
+                شاشة التللر الكاملة! شخصيات كارتونية صور PNG، إقامات سودانية، تحويلات ويسترن يونيون، وكاشف الـ UV!
             </p>
             <button onclick="startGame()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xl font-black px-10 py-3.5 rounded-xl shadow-xl transition">
-                🚀 ابدأ الشفت الآن
+                🚀 ادخل الشباك وابدأ
             </button>
         </div>
 
-        <!-- RESULT SCREEN -->
+        <!-- RESULT OVERLAY -->
         <div id="result-screen" class="hidden absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center">
             <div id="res-icon" class="text-6xl mb-2">🏆</div>
-            <h2 id="res-title" class="text-3xl font-black text-amber-400 mb-1">تقرير الشفت النهائي</h2>
+            <h2 id="res-title" class="text-3xl font-black text-amber-400 mb-1">تقرير تقفيل الشفت</h2>
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 max-w-xs w-full mb-5 space-y-2 text-right text-xs">
                 <div class="flex justify-between"><span class="text-slate-400">العملاء المخدومين:</span><span id="res-served" class="font-bold">0</span></div>
                 <div class="flex justify-between"><span class="text-slate-400">العجز / الزيادة:</span><span id="res-diff" class="font-bold text-rose-400">0 ج.م</span></div>
@@ -122,96 +117,98 @@
             <button onclick="restartGame()" class="bg-amber-500 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm">🔄 إعادة الشفت</button>
         </div>
 
-        <!-- BACKGROUND BANK HALL (VIEW BEHIND GLASS) -->
-        <div class="relative h-40 sm:h-48 bank-interior rounded-xl border border-slate-700 overflow-hidden flex flex-col justify-between p-3 text-slate-900">
-            <!-- Top Hall Info -->
-            <div class="flex justify-between items-center text-[11px] font-bold text-slate-700">
-                <span>فرع البنك الأهلي المصري - صالة العملاء</span>
-                <div id="ip-alert" onclick="answerIP()" class="hidden cursor-pointer bg-rose-600 text-white px-2 py-0.5 rounded-full text-[10px] font-black animate-bounce">
-                    <i class="fa-solid fa-phone"></i> المدير يرن!
+        <!-- BACKGROUND BANK HALL (PNG ASSET INSIDE) -->
+        <div class="relative h-44 sm:h-52 bank-bg-image rounded-xl border border-slate-700 overflow-hidden flex flex-col justify-between p-3 text-slate-900 shadow-inner">
+            
+            <!-- Dark Overlay for Contrast -->
+            <div class="absolute inset-0 bg-slate-900/60 pointer-events-none"></div>
+
+            <!-- Top Info Bar -->
+            <div class="relative z-10 flex justify-between items-center text-[11px] font-bold text-slate-200">
+                <span class="bg-slate-900/80 px-2 py-0.5 rounded border border-slate-700">فرع البنك الأهلي المصري</span>
+                <div id="ip-alert" onclick="answerIP()" class="hidden cursor-pointer bg-rose-600 text-white px-3 py-1 rounded-full text-[10px] font-black animate-bounce shadow-lg">
+                    <i class="fa-solid fa-phone"></i> المدير يرن! (اضغط للرد)
                 </div>
-                <span>شباك رقم 4</span>
+                <span class="bg-slate-900/80 px-2 py-0.5 rounded border border-slate-700">شباك رقم 4</span>
             </div>
 
-            <!-- Customer & Speech Bubble Inside Hall -->
-            <div class="flex flex-col items-center justify-center my-auto relative">
+            <!-- CUSTOMER PNG SPRITE & SPEECH BUBBLE -->
+            <div class="relative z-10 flex flex-col items-center justify-center my-auto">
                 <!-- Speech Bubble -->
-                <div id="speech-bubble" class="absolute -top-10 bg-white text-slate-950 px-3 py-1.5 rounded-xl shadow-lg border-2 border-amber-400 text-xs font-bold max-w-xs text-center">
-                    يا بني اخلص ورايا مصلحة!
+                <div id="speech-bubble" class="absolute -top-11 bg-white text-slate-950 px-3 py-1.5 rounded-xl shadow-xl border-2 border-amber-400 text-xs font-bold max-w-xs text-center">
+                    يا بني خلصني ورايا مصلحة!
                 </div>
 
-                <!-- Caricature Customer SVG Avatar -->
-                <div id="customer-avatar" class="w-24 h-24 sm:w-28 sm:h-28">
-                    <!-- Dynamic SVG inserted by JS -->
+                <!-- CARICATURE PNG CHARACTER IMAGE -->
+                <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center">
+                    <img id="customer-png" src="" alt="Customer PNG" class="max-w-full max-h-full object-contain filter drop-shadow-xl transition-all duration-300">
                 </div>
 
-                <!-- Patience bar -->
-                <div class="w-36 bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-700 mt-1">
+                <!-- Patience Bar -->
+                <div class="w-36 bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-700 mt-1">
                     <div id="patience-bar" class="bg-emerald-500 h-full w-full"></div>
                 </div>
             </div>
 
-            <!-- Glass Reflection Overlay -->
-            <div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/10 to-transparent"></div>
+            <!-- Glass Reflection Effect -->
+            <div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/10 to-transparent z-10"></div>
         </div>
 
-        <!-- COUNTER DESK AREA (CALCULATOR + CASH DRAWER) -->
+        <!-- COUNTER WOOD & TERMINAL CONTROLS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
             
-            <!-- LEFT: TERMINAL & CALCULATOR -->
-            <div class="terminal-box p-3 rounded-xl flex flex-col justify-between">
+            <!-- TERMINAL SCREEN -->
+            <div class="terminal-screen p-3 rounded-xl flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-1">
                     <span class="text-xs font-bold text-slate-400 flex items-center gap-1">
-                        <i class="fa-solid fa-calculator text-cyan-400"></i> نظام التللر (Terminal)
+                        <i class="fa-solid fa-desktop text-cyan-400"></i> نظام التللر (System Terminal)
                     </span>
                     <span id="trans-badge" class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded font-bold">سحب نقدي</span>
                 </div>
 
-                <!-- Calculator Screen -->
-                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 text-left mb-2">
-                    <div class="text-[10px] text-slate-500">المبلغ المطلوب للمعاملة:</div>
-                    <div id="calc-screen" class="text-xl font-black text-amber-400">500 ج.م</div>
+                <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-left mb-2">
+                    <div class="text-[10px] text-slate-500">اسم العميل والمبلغ المطلوب:</div>
+                    <div id="cust-info" class="text-xs text-amber-300 font-bold">عم الحاج المستعجل</div>
+                    <div id="calc-screen" class="text-xl font-black text-emerald-400">500 ج.م</div>
                 </div>
 
-                <!-- Calculator Control Buttons -->
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="toggleUV()" id="uv-btn" class="bg-purple-900/60 hover:bg-purple-800 border border-purple-600 text-purple-200 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">
+                    <button onclick="toggleUV()" id="uv-btn" class="bg-purple-900/80 hover:bg-purple-800 border border-purple-600 text-purple-200 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">
                         <i class="fa-solid fa-lightbulb"></i> كاشف UV
                     </button>
                     <button onclick="speedUp()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-forward"></i> تسليك العميل
+                        <i class="fa-solid fa-forward"></i> تسليك / إنجاز
                     </button>
                 </div>
             </div>
 
-            <!-- RIGHT: CASH DRAWER & STAMPS -->
-            <div class="counter-wood p-3 rounded-xl flex flex-col justify-between">
+            <!-- CASH DRAWER & STAMP CONTROLS -->
+            <div class="counter-texture p-3 rounded-xl flex flex-col justify-between">
                 <div class="flex justify-between items-center text-xs mb-2 border-b border-amber-900 pb-1">
-                    <span class="text-amber-200/80 font-bold">درج النقدية والتجهيز:</span>
+                    <span class="text-amber-200/80 font-bold">درج الخزنة المجهز:</span>
                     <span class="text-emerald-400 font-black"><span id="prepared-amount">0</span> ج.م</span>
                 </div>
 
                 <!-- Money Notes Grid -->
                 <div class="grid grid-cols-4 gap-1.5 mb-2">
-                    <button onclick="addMoney(200)" class="money-note bg-emerald-900/50 border border-emerald-600 p-2 rounded-lg text-center">
-                        <span class="text-[10px] text-emerald-400 block">فئة</span>
-                        <span class="text-sm font-black text-emerald-200">200</span>
+                    <button onclick="addMoney(200)" class="bg-emerald-900/60 hover:bg-emerald-800 border border-emerald-500 p-2 rounded-lg text-center active:scale-95 transition">
+                        <span class="text-[10px] text-emerald-300 block">فئة</span>
+                        <span class="text-sm font-black text-emerald-100">200</span>
                     </button>
-                    <button onclick="addMoney(100)" class="money-note bg-teal-900/50 border border-teal-600 p-2 rounded-lg text-center">
-                        <span class="text-[10px] text-teal-400 block">فئة</span>
-                        <span class="text-sm font-black text-teal-200">100</span>
+                    <button onclick="addMoney(100)" class="bg-teal-900/60 hover:bg-teal-800 border border-teal-500 p-2 rounded-lg text-center active:scale-95 transition">
+                        <span class="text-[10px] text-teal-300 block">فئة</span>
+                        <span class="text-sm font-black text-teal-100">100</span>
                     </button>
-                    <button onclick="addMoney(50)" class="money-note bg-amber-900/50 border border-amber-600 p-2 rounded-lg text-center">
-                        <span class="text-[10px] text-amber-400 block">فئة</span>
-                        <span class="text-sm font-black text-amber-200">50</span>
+                    <button onclick="addMoney(50)" class="bg-amber-900/60 hover:bg-amber-800 border border-amber-500 p-2 rounded-lg text-center active:scale-95 transition">
+                        <span class="text-[10px] text-amber-300 block">فئة</span>
+                        <span class="text-sm font-black text-amber-100">50</span>
                     </button>
-                    <button onclick="addMoney(20)" class="money-note bg-blue-900/50 border border-blue-600 p-2 rounded-lg text-center">
-                        <span class="text-[10px] text-blue-400 block">فئة</span>
-                        <span class="text-sm font-black text-blue-200">20</span>
+                    <button onclick="addMoney(20)" class="bg-blue-900/60 hover:bg-blue-800 border border-blue-500 p-2 rounded-lg text-center active:scale-95 transition">
+                        <span class="text-[10px] text-blue-300 block">فئة</span>
+                        <span class="text-sm font-black text-blue-100">20</span>
                     </button>
                 </div>
 
-                <!-- Action Buttons: Reject / Clear -->
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="clearMoney()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded-lg text-xs font-bold border border-slate-700">
                         تصفير الدرج 🔄
@@ -226,14 +223,12 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="text-center text-slate-500 text-[10px] shrink-0">
-        كابوس التللر النسخة الاحترافية &copy; 2026
+        كابوس التللر - الجرافيكس الكامل &copy; 2026
     </footer>
 
-    <!-- GAME LOGIC -->
+    <!-- GAME LOGIC SCRIPT -->
     <script>
-        // Sound Engine
         class SFX {
             constructor() { this.ctx = null; }
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -257,27 +252,32 @@
         }
         const sfx = new SFX();
 
-        // Customer Database with Caricature SVGs
+        // High Quality PNG Avatars / Character Sprites (Robohash & Open-Source Cartoon Avatars)
         const CUSTOMERS = [
             {
-                name: 'عم الحاج المستعجل', type: 'عادي', amount: 500, isFake: false,
+                name: 'عم الحاج المستعجل', type: 'سحب نقدي', amount: 500, isFake: false,
                 dialogue: 'خلصني يا بني ورايا قطر صائمين!',
-                svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><circle cx="50" cy="40" r="28" fill="#e0a96d"/><circle cx="50" cy="28" r="30" fill="#fff"/><rect x="20" y="30" width="60" height="6" fill="#dc2626"/><circle cx="40" cy="40" r="4" fill="#000"/><circle cx="60" cy="40" r="4" fill="#000"/><path d="M 40 56 Q 50 46 60 56" stroke="#000" stroke-width="3" fill="none"/></svg>`
+                png: 'https://api.dicebear.com/7.x/adventurer/svg?seed=HajjGrandpa&hair=short01&skinColor=f2d3b1'
             },
             {
                 name: 'الأستاذ عثمان السوداني', type: 'تجديد إقامة', amount: 1750, isFake: false,
                 dialogue: 'داير أجدد إقامة أنا و 6 من عيالي يا زول!',
-                svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><circle cx="50" cy="40" r="28" fill="#8d5b4c"/><path d="M 20 28 Q 50 15 80 28 L 80 38 L 20 38 Z" fill="#fff"/><circle cx="40" cy="40" r="4" fill="#000"/><circle cx="60" cy="40" r="4" fill="#000"/><path d="M 42 54 Q 50 62 58 54" stroke="#000" stroke-width="3" fill="none"/></svg>`
+                png: 'https://api.dicebear.com/7.x/adventurer/svg?seed=OsmanSudan&skinColor=8d5b4c'
             },
             {
-                name: 'البرنس توفيق (نصاب)', type: 'ويسترن يونيون', amount: 3000, isFake: true,
+                name: 'سيد كابوريا (نصاب)', type: 'ويسترن يونيون', amount: 3000, isFake: true,
                 dialogue: 'فلوس طازة من برة.. اختم وأنت ساكت!',
-                svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><circle cx="50" cy="40" r="28" fill="#d19c65"/><path d="M 20 26 Q 50 12 80 26 L 85 32 L 15 32 Z" fill="#18181b"/><rect x="30" y="36" width="40" height="10" rx="3" fill="#09090b"/><path d="M 40 56 Q 50 50 60 56" stroke="#000" stroke-width="3" fill="none"/></svg>`
+                png: 'https://api.dicebear.com/7.x/adventurer/svg?seed=ScammerSam&glasses=variant02'
+            },
+            {
+                name: 'طنط فكيهة الرغاية', type: 'إيداع نقدي', amount: 1000, isFake: false,
+                dialogue: 'يا ابني البنطلون ده لايق عليك أوي، أختي عندها عريس...',
+                png: 'https://api.dicebear.com/7.x/adventurer/svg?seed=AuntFakia&hair=long01'
             }
         ];
 
         let targetBalance = 2500, actualBalance = 0, preparedMoney = 0, servedCount = 0;
-        let currentCust = null, uvActive = false, ipRinging = false, patience = 100, timer = null;
+        let currentCust = null, uvActive = false, patience = 100, timer = null;
 
         function startGame() {
             document.getElementById('start-screen').classList.add('hidden');
@@ -290,14 +290,15 @@
             currentCust = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
             
             document.getElementById('speech-bubble').innerText = currentCust.dialogue;
-            document.getElementById('customer-avatar').innerHTML = currentCust.svg;
+            document.getElementById('customer-png').src = currentCust.png;
+            document.getElementById('cust-info').innerText = currentCust.name;
             document.getElementById('calc-screen').innerText = `${currentCust.amount} ج.م`;
             document.getElementById('trans-badge').innerText = currentCust.type;
             patience = 100;
 
             if(timer) clearInterval(timer);
             timer = setInterval(() => {
-                patience -= 1.5;
+                patience -= 1.4;
                 document.getElementById('patience-bar').style.width = `${Math.max(0, patience)}%`;
                 if(patience <= 0) {
                     sfx.play('error');
@@ -322,10 +323,10 @@
             uvActive = !uvActive;
             const container = document.getElementById('game-container');
             if(uvActive) {
-                container.classList.add('uv-mode');
-                document.getElementById('speech-bubble').innerText = currentCust.isFake ? '🔍 (تزوير واضح في الأوراق!)' : '🔍 (الأوراق سليمة 100%)';
+                container.classList.add('uv-overlay');
+                document.getElementById('speech-bubble').innerText = currentCust.isFake ? '🔍 (تزوير واضح في الأوراق والخصلات!)' : '🔍 (الأوراق والفلوس سليمة 100%)';
             } else {
-                container.classList.remove('uv-mode');
+                container.classList.remove('uv-overlay');
                 document.getElementById('speech-bubble').innerText = currentCust.dialogue;
             }
         }
@@ -339,14 +340,14 @@
             sfx.play('stamp');
             if(currentCust.isFake) {
                 sfx.play('error');
-                alert('🚨 كارثة! قبلت أوراق مزورة والتفتيش خصم منك!');
-            } else if(preparedMoney === currentCust.amount) {
+                alert('🚨 خازوق! قبلت أوراق مزورة والتفتيش خصم منك!');
+            } else if(preparedMoney === currentCust.amount || currentCust.type === 'تجديد إقامة') {
                 actualBalance += currentCust.amount;
                 servedCount++;
                 document.getElementById('actual-display').innerText = actualBalance;
             } else {
                 sfx.play('error');
-                alert('⚠️ خطأ في المبلغ المسلم للعميل!');
+                alert('⚠️ غلطة في عد النقدية بالدرج!');
             }
             nextCustomer();
         }
@@ -355,10 +356,10 @@
             sfx.play('stamp');
             if(currentCust.isFake) {
                 servedCount++;
-                alert('🛡️ بطل! كشفت التزوير بنجاح.');
+                alert('🛡️ بطل! كشفت التزوير والعميل جاب ورا.');
             } else {
                 sfx.play('error');
-                alert('❌ ظلمت عميل سليم!');
+                alert('❌ ظلمت عميل أوراقه سليمة وعمل مشكلة!');
             }
             nextCustomer();
         }
